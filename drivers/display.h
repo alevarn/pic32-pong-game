@@ -10,8 +10,6 @@
 #define DISPLAY_HEIGHT 32
 #define DISPLAY_PAGES 4
 
-unsigned char spi_transmission(unsigned char data);
-
 void init_display(void);
 
 void update_display(unsigned char *buffer);

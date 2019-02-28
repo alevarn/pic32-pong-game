@@ -1,4 +1,5 @@
 #include <pic32mx.h>
+#include "../tools/utility.h"
 #include "graphics.h"
 
 static unsigned char buffer[BUFFER_SIZE];
@@ -251,7 +252,7 @@ void draw_string(const char *str, unsigned int spacing, int x, int y)
         unsigned char bit = 0;
         for (yCopy = y; yCopy < y + 5; yCopy++)
         {
-            for (xCopy = x; xCopy < x + fontWidth[charIndex]; xCopy++)
+            for (xCopy = x; xCopy < x + 5; xCopy++)
             {
                 if (font[charIndex] & (1 << bit))
                 {
@@ -259,7 +260,6 @@ void draw_string(const char *str, unsigned int spacing, int x, int y)
                 }
                 bit++;
             }
-            bit += 5 - fontWidth[charIndex];
         }
         x += fontWidth[charIndex] + spacing;
         str++;
@@ -270,44 +270,6 @@ void draw_char(char value, int x, int y)
 {
     char c[] = {value, '\0'};
     draw_string(c, 0, x, y);
-}
-
-static char *int_to_string(unsigned int value)
-{
-    static char str[11];
-    unsigned char digits = 0;
-
-    if (value < 10)
-    {
-        unsigned char remainder = value % 10;
-        value /= 10;
-        str[digits++] = remainder + 0x30;
-    }
-    else
-    {
-        while (value > 0)
-        {
-            unsigned char remainder = value % 10;
-            value /= 10;
-            str[digits++] = remainder + 0x30;
-        }
-
-        // Reverse the string.
-        unsigned char high = digits - 1;
-        unsigned char low = 0;
-        while (low < high)
-        {
-            char temp = str[low];
-            str[low] = str[high];
-            str[high] = temp;
-            high--;
-            low++;
-        }
-    }
-
-    str[digits] = '\0';
-
-    return str;
 }
 
 void draw_int(unsigned int value, unsigned int spacing, int x, int y)

@@ -1,7 +1,7 @@
 #include <pic32mx.h>
 #include "display.h"
 
-unsigned char spi_transmission(unsigned char data)
+static unsigned char spi_transmission(unsigned char data)
 {
     while (!(SPI2STAT & PIC32_SPISTAT_SPITBE)); // Wait until transmit buffer is empty.
     SPI2BUF = data;
