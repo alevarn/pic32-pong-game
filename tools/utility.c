@@ -1,8 +1,8 @@
 #include "utility.h"
 
-unsigned int strlen(char *str)
+unsigned int strlen(const char *str)
 {
-    int count = 0;
+    unsigned int count = 0;
     while (*str != '\0')
     {
         count++;
@@ -11,14 +11,13 @@ unsigned int strlen(char *str)
     return count;
 }
 
-char *int_to_string(unsigned int integer)
+void int_to_string(unsigned int integer, char *buffer)
 {
-    static char str[11];
     unsigned char digits = 0;
 
     if (integer == 0)
     {
-        str[digits++] = 0x30;
+        buffer[digits++] = 0x30;
     }
     else
     {
@@ -26,7 +25,7 @@ char *int_to_string(unsigned int integer)
         {
             unsigned char remainder = integer % 10;
             integer /= 10;
-            str[digits++] = remainder + 0x30;
+            buffer[digits++] = remainder + 0x30;
         }
     }
 
@@ -37,15 +36,13 @@ char *int_to_string(unsigned int integer)
         unsigned char low = 0;
         while (low < high)
         {
-            char temp = str[low];
-            str[low] = str[high];
-            str[high] = temp;
+            char temp = buffer[low];
+            buffer[low] = buffer[high];
+            buffer[high] = temp;
             high--;
             low++;
         }
     }
 
-    str[digits] = '\0';
-
-    return str;
+    buffer[digits] = '\0';
 }

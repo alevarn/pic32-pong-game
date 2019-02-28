@@ -1,4 +1,5 @@
 #include <pic32mx.h>
+#include "../tools/utility.h"
 #include "eeprom.h"
 
 void init_eeprom(void)
@@ -140,7 +141,7 @@ unsigned int read_int(unsigned short address)
     return integer;
 }
 
-unsigned char *read_string(unsigned short address)
+unsigned int read_string(unsigned short address, char *buffer)
 {
     send_address(address);
 
@@ -149,13 +150,11 @@ unsigned char *read_string(unsigned short address)
         start();
     } while (!send(CONTROL_BYTE_READ));
 
-    static char str[64];
-
     int i;
     for (i = 0; i < 64; i++)
     {
-        str[i] = receive();
-        if (str[i] != '\0')
+        buffer[i] = receive();
+        if (buffer[i] != '\0')
         {
             acknowledge();
         }
@@ -163,7 +162,7 @@ unsigned char *read_string(unsigned short address)
         {
             not_acknowledge();
             stop();
-            return str;
+            return strlen(buffer);
         }
     }
 }

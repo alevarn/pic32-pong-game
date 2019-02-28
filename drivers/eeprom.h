@@ -16,6 +16,6 @@ unsigned char read_byte(unsigned short address);
 
 unsigned int read_int(unsigned short address);
 
-unsigned char *read_string(unsigned short address);
+unsigned int read_string(unsigned short address, char *buffer);
 
 #endif

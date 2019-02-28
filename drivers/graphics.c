@@ -266,37 +266,41 @@ void draw_string(const char *str, unsigned int spacing, int x, int y)
     }
 }
 
-void draw_char(char value, int x, int y)
+void draw_char(char c, int x, int y)
 {
-    char c[] = {value, '\0'};
-    draw_string(c, 0, x, y);
+    char str[] = {c, '\0'};
+    draw_string(str, 0, x, y);
 }
 
-void draw_int(unsigned int value, unsigned int spacing, int x, int y)
+void draw_int(unsigned int integer, unsigned int spacing, int x, int y)
 {
-    draw_string(int_to_string(value), spacing, x, y);
+    char buffer[11];
+    int_to_string(integer, buffer);
+    draw_string(buffer, spacing, x, y);
 }
 
-unsigned int get_char_length(char value)
+unsigned int get_char_width(char c)
 {
-    return fontWidth[value - 0x20];
+    return fontWidth[c - 0x20];
 }
 
-unsigned int get_string_length(const char *str, unsigned int spacing)
+unsigned int get_string_width(const char *str, unsigned int spacing)
 {
     unsigned int length = 0;
     while (*str != '\0')
     {
-        length += get_char_length(*str) + spacing;
+        length += get_char_width(*str) + spacing;
         str++;
     }
     length -= spacing;
     return length;
 }
 
-unsigned int get_int_length(unsigned int value, unsigned int spacing)
+unsigned int get_int_width(unsigned int integer, unsigned int spacing)
 {
-    return get_string_length(int_to_string(value), spacing);
+    char buffer[11];
+    int_to_string(integer, buffer);
+    return get_string_width(buffer, spacing);
 }
 
 void clear_display(void)

@@ -23,15 +23,15 @@ void draw_filled_rectangle(int x, int y, unsigned int width, unsigned int height
 
 void draw_string(const char *str, unsigned int spacing, int x, int y);
 
-void draw_char(char value, int x, int y);
+void draw_char(char c, int x, int y);
 
-void draw_int(unsigned int value, unsigned int spacing, int x, int y);
+void draw_int(unsigned int integer, unsigned int spacing, int x, int y);
 
-unsigned int get_char_length(char value);
+unsigned int get_char_width(char c);
 
-unsigned int get_string_length(const char *str, unsigned int spacing);
+unsigned int get_string_width(const char *str, unsigned int spacing);
 
-unsigned int get_int_length(unsigned int value, unsigned int spacing);
+unsigned int get_int_width(unsigned int integer, unsigned int spacing);
 
 void clear_display(void);
 
