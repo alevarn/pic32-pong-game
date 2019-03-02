@@ -11,8 +11,14 @@
 #define START_BIT 0x8000
 #define FLAG_BIT 0x100
 
+/**
+ *  Initierar TMR2 genom att sätta prescale bitarna och perioden.
+*/
 void init_timer(void);
 
+/**
+ *  Genererar en fördröjning i ett önskat antal millisekunder.
+*/
 void delay_ms(unsigned int ms);
 
 #endif

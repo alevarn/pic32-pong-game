@@ -9,12 +9,14 @@ void init_eeprom(void)
     I2C1CON = PIC32_I2CCON_SIDL | PIC32_I2CCON_ON;
 }
 
+// Väntar på att I2C1 är redo.
 static void wait()
 {
     unsigned char busy = PIC32_I2CCON_SEN | PIC32_I2CCON_RSEN | PIC32_I2CCON_PEN | PIC32_I2CCON_RCEN | PIC32_I2CCON_ACKEN;
     while (I2C1CON & busy || I2C1STAT & PIC32_I2CSTAT_TRSTAT);
 }
 
+// Skickar data med I2C1.
 static int send(unsigned char data)
 {
     wait();
@@ -23,6 +25,7 @@ static int send(unsigned char data)
     return !(I2C1STAT & PIC32_I2CSTAT_ACKSTAT);
 }
 
+// Tar emot data med I2C1.
 static unsigned char receive()
 {
     wait();
@@ -60,6 +63,7 @@ static void stop()
     wait();
 }
 
+// Skickar adressen som ska läsas/skrivas från/till EEPROM minnet.
 static void send_address(unsigned short address)
 {
     do
@@ -67,40 +71,45 @@ static void send_address(unsigned short address)
         start();
     } while (!send(CONTROL_BYTE_WRITE));
 
+    // Skickar de åtta mest signifikanta bitarna av adressen.
     send(address >> 8);
+
+    // Skickar de åtta minst signifikanta bitarna av adressen.
     send(address);
 }
 
-void write_byte(unsigned short address, unsigned char byte)
+void write_byte_to_eeprom(unsigned short address, unsigned char byte)
 {
     send_address(address);
     send(byte);
     stop();
 }
 
-void write_int(unsigned short address, unsigned int integer)
+void write_int_to_eeprom(unsigned short address, unsigned int integer)
 {
-    write_byte(address, integer >> 24);
-    write_byte(address + 1, integer >> 16);
-    write_byte(address + 2, integer >> 8);
-    write_byte(address + 3, integer);
+    write_byte_to_eeprom(address, integer >> 24);
+    write_byte_to_eeprom(address + 1, integer >> 16);
+    write_byte_to_eeprom(address + 2, integer >> 8);
+    write_byte_to_eeprom(address + 3, integer);
 }
 
-void write_string(unsigned short address, const char *str, unsigned int maxLength)
+void write_string_to_eeprom(unsigned short address, const char *str)
 {
-    int i;
-    for (i = 0; i < maxLength; i++)
+    int i = 0;
+    while (1)
     {
-        write_byte(address + i, *str);
+        // Skickar ett tecken i taget.
+        write_byte_to_eeprom(address + i, *str);
         if (*str == '\0')
         {
             return;
         }
         str++;
+        i++;
     }
 }
 
-unsigned char read_byte(unsigned short address)
+unsigned char read_byte_from_eeprom(unsigned short address)
 {
     send_address(address);
 
@@ -115,25 +124,27 @@ unsigned char read_byte(unsigned short address)
     return byte;
 }
 
-unsigned int read_int(unsigned short address)
+unsigned int read_int_from_eeprom(unsigned short address)
 {
     unsigned int integer = 0;
-    integer |= read_byte(address) << 24;
-    integer |= read_byte(address + 1) << 16;
-    integer |= read_byte(address + 2) << 8;
-    integer |= read_byte(address + 3);
+    integer |= read_byte_from_eeprom(address) << 24;
+    integer |= read_byte_from_eeprom(address + 1) << 16;
+    integer |= read_byte_from_eeprom(address + 2) << 8;
+    integer |= read_byte_from_eeprom(address + 3);
     return integer;
 }
 
-void read_string(unsigned short address, char *buffer, unsigned int maxLength)
+void read_string_from_eeprom(unsigned short address, char *buffer)
 {
-    int i;
-    for (i = 0; i < maxLength; i++)
+    int i = 0;
+    while (1)
     {
-        buffer[i] = read_byte(address + i);
+        // Läser in ett tecken i taget.
+        buffer[i] = read_byte_from_eeprom(address + i);
         if (buffer[i] == '\0')
         {
             return;
         }
+        i++;
     }
 }

@@ -44,21 +44,86 @@ typedef struct
     int velocityY;
 } Ball;
 
+/**
+ *  Läser ett initialvärde från EEPROM och skriver dit ett nytt värde till EEPROM.
+ *  Används för att generera olika slumptal som skiljer sig åt varje gång datorn startas om.
+*/
 void fix_seed(void);
+
+/**
+ *  Läser in highscores från EEPROM till programmet. Anropas varje gång programmet startas om.
+*/
 void load_highscores(void);
+
+/**
+ *  Återställer highscores bitarna i EEPROM till standard värden vilket är "EMPTY" och 0.
+*/
 void reset_highscores(void);
+
+/**
+ *  En meny som låter användaren välja "SINGLE PLAYER", "MULTIPLAYER" eller "HIGHSCORE" och returnerar det val som gjorts.
+*/
 Selection main_menu(void);
+
+/**
+ *  Den här metoden anropas när användaren väljer att spela "SINGLE PLAYER".
+*/
 void single_player(void);
+
+/**
+ *  Den här metoden anropas när användaren väljer att spela "MULTIPLAYER".
+*/
 void multiplayer(void);
+
+/**
+ *  Den här metoden anropas när användaren väljer "HIGHSCORE".
+*/
 void highscore(void);
+
+/**
+ *  Tar in nya resultat från ett antal spelare (en eller två) och sorterar om vektorn highscores efter poäng.
+ *  Sedan skriver metoden in den nya highscore listan i EEPROM.
+*/
 void update_highscore(Player *players, unsigned char numberOfPlayers);
+
+/**
+ *  En meny som låter användaren välja "EASY", "MEDIUM", "HARD" eller "IMPOSSIBLE" och returnerar det val som gjorts.
+*/
 Difficulty difficulty_menu(void);
+
+/**
+ *  Låter användaren mata in ett namn. Här kan man också bestämma titeln för skärmen (pageTitle).
+*/
 void input_name(char *buffer, char *pageTitle);
+
+/**
+ *  Flyttar en spelare uppåt 1 pixel och kontrollerar kollision med taket.
+*/
 void move_player_up(Player *player);
+
+/**
+ *  Flyttar en spelare neråt 1 pixel och kontrollerar kollision med golvet.
+*/
 void move_player_down(Player *player);
+
+/**
+ *  Tar in en spelare som AI:n får kontrollera, beroende på svårighetsgrad så styr den spelaren olika bra.
+*/
 void ai_control(Player *player, Ball *ball, Difficulty difficulty);
+
+/**
+ * Återställer positionerna för spelarna och bollen. Den här metoden anropas efter att en spelare gjort poäng och i början av ett nytt spel.
+*/
 void reset_positions(Player *player1, Player *player2, Ball *ball);
+
+/**
+ *  Ritar spelarna, bollen, klockan som tickar neråt och den prickade linjen längs mitten av spelplanen.
+*/
 void draw_game(const Player *player1, const Player *player2, const Ball *ball, const int *gameTime);
+
+/**
+ *  Uppdaterar bollens position och kontrollerar kollision med väggarna och spelarna och undersöker ifall någon spelare ska få poäng.
+*/
 void update_game(Player *player1, Player *player2, Ball *ball, int *gameTime);
 
 static Player highscores[HIGHSCORE_TABLE_SIZE];
@@ -66,11 +131,13 @@ static int reset = 1;
 
 int main(void)
 {
+    // Initierar drivrutinerna.
     init_input();
     init_timer();
     init_display();
     init_eeprom();
 
+    // Laddningsskärm.
     clear_display();
     draw_string("LOADING...", 2, DISPLAY_WIDTH / 2 - get_string_width("LOADING...", 2) / 2, DISPLAY_HEIGHT / 2 - FONT_HEIGHT / 2);
     refresh_display();
@@ -100,7 +167,11 @@ int main(void)
 
 void fix_seed(void)
 {
-    unsigned int seed = read_int(0);
+    // Lagrat initialvärde.
+    unsigned int seed = read_int_from_eeprom(0);
+    
+    // Vi beräknar ett nytt initialvärde till nästa gång datorn startas om,
+    // vi vill inte använda samma eftersom då kommer mönster att uppreppas.
     unsigned int nextSeed = 0;
 
     seed_random(seed);
@@ -108,10 +179,11 @@ void fix_seed(void)
     int i;
     for (i = 0; i < 1000000; i++)
     {
-        nextSeed = random(0, 32767);
+        nextSeed = random(32767);
     }
 
-    write_int(0, nextSeed);
+    // Skriver initialvärdet till EEEPROM.
+    write_int_to_eeprom(0, nextSeed);
 
     seed_random(seed);
 }
@@ -123,9 +195,9 @@ void load_highscores(void)
 
     for (i = 0; i < HIGHSCORE_TABLE_SIZE; i++)
     {
-        read_string(address, highscores[i].name, PLAYER_NAME_LENGTH + 1);
-        address += strlen(highscores[i].name) + 1;
-        highscores[i].score = read_int(address);
+        read_string_from_eeprom(address, highscores[i].name);
+        address += strlen(highscores[i].name) + 1; // +1 eftersom '\0' också lagras i EEPROM.
+        highscores[i].score = read_int_from_eeprom(address);
         address += 4;
     }
 }
@@ -137,15 +209,16 @@ void reset_highscores(void)
 
     for (i = 0; i < HIGHSCORE_TABLE_SIZE; i++)
     {
-        write_string(address, "EMPTY", PLAYER_NAME_LENGTH + 1);
-        address += strlen("EMPTY") + 1;
-        write_int(address, 0);
+        write_string_to_eeprom(address, "EMPTY");
+        address += strlen("EMPTY") + 1; // +1 eftersom '\0' också lagras i EEPROM.
+        write_int_to_eeprom(address, 0);
         address += 4;
     }
 }
 
 Selection main_menu(void)
 {
+    // Håller koll på vilket alternativ som är markerat.
     Selection marked = SINGLE_PLAYER;
 
     while (1)
@@ -158,6 +231,7 @@ Selection main_menu(void)
         draw_string("MULTIPLAYER", 1, 0, 25);
         draw_string("HIGHSCORE", 1, DISPLAY_WIDTH - get_string_width("HIGHSCORE", 1), 14);
 
+        // Ritar ut linjen under det alternativ som är markerat.
         switch (marked)
         {
         case SINGLE_PLAYER:
@@ -173,6 +247,7 @@ Selection main_menu(void)
 
         refresh_display();
 
+        // Gå uppåt i menyn.
         if (btn4_clicked())
         {
             if (marked != SINGLE_PLAYER)
@@ -181,6 +256,7 @@ Selection main_menu(void)
             }
         }
 
+        // Gå neråt i menyn.
         if (btn3_clicked())
         {
             if (marked != HIGHSCORE)
@@ -189,8 +265,10 @@ Selection main_menu(void)
             }
         }
 
+        // Kontrollera om ett alternativ har blivit valt.
         if (btn2_clicked())
         {
+            // Returnera det alternativ som blivit valt.
             return marked;
         }
     }
@@ -525,7 +603,7 @@ void ai_control(Player *player, Ball *ball, Difficulty difficulty)
 
     if (rounds == 0)
     {
-        actionPoints = random(0, 1000 + (1500 << difficulty));
+        actionPoints = random(1000 + (1500 << difficulty));
         rounds = 50;
     }
 
@@ -543,7 +621,7 @@ void ai_control(Player *player, Ball *ball, Difficulty difficulty)
     }
     else if (actionPoints >= 500 && actionPoints <= 1000 && ball->velocityX == 1)
     {
-        // Stall.
+        // Vänta.
         rounds--;
     }
     else if (ball->velocityX == 1)
@@ -597,7 +675,7 @@ void update_game(Player *player1, Player *player2, Ball *ball, int *gameTime)
         draw_game(player1, player2, ball, gameTime);
         refresh_display();
 
-        int ballRandomStart = random(0, 4);
+        int ballRandomStart = random(4);
 
         switch (ballRandomStart)
         {
@@ -697,9 +775,9 @@ void update_highscore(Player *players, unsigned char numberOfPlayers)
     int i;
     for (i = 0; i < HIGHSCORE_TABLE_SIZE; i++)
     {
-        write_string(address, highscores[i].name, PLAYER_NAME_LENGTH + 1);
+        write_string_to_eeprom(address, highscores[i].name);
         address += strlen(highscores[i].name) + 1;
-        write_int(address, highscores[i].score);
+        write_int_to_eeprom(address, highscores[i].score);
         address += 4;
     }
 }

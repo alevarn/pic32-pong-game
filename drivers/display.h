@@ -10,8 +10,14 @@
 #define DISPLAY_HEIGHT 32
 #define DISPLAY_PAGES 4
 
+/**
+ *  Initierar SPI2 och OLED skärmen.
+*/
 void init_display(void);
 
+/**
+ *  Uppdaterar skärmen utifrån en array.
+*/
 void update_display(unsigned char *buffer);
 
 #endif

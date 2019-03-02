@@ -1,7 +1,6 @@
 #include <pic32mx.h>
 #include "input.h"
 
-
 void init_input(void)
 {
     TRISFSET = BTN1_BIT;

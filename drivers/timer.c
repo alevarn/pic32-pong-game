@@ -14,7 +14,8 @@ void delay_ms(unsigned int ms)
     TMR2 = 0;
     while (countMs < ms)
     {
-        if (IFS(0) & FLAG_BIT)
+        // Kontrollerar om en millisekund har gått.
+        if (IFS(0) & FLAG_BIT) 
         {
             IFSCLR(0) = FLAG_BIT;
             countMs++;

@@ -3,14 +3,15 @@
 
 static unsigned char spi_transmission(unsigned char data)
 {
-    while (!(SPI2STAT & PIC32_SPISTAT_SPITBE)); // Wait until transmit buffer is empty.
+    while (!(SPI2STAT & PIC32_SPISTAT_SPITBE)); // Vänta tills överföringsbuffert är tom.
     SPI2BUF = data;
-    while (!(SPI2STAT & PIC32_SPISTAT_SPIRBF)); // Wait until receive buffer is full.
+    while (!(SPI2STAT & PIC32_SPISTAT_SPIRBF)); // Vänta tills mottagningsbuffert är full.
     return SPI2BUF;
 }
 
 void init_display(void)
 {
+    // Initierar SPI2.
     SPI2CON = 0;
     SPI2BRG = 15;
     SPI2STATCLR = PIC32_SPISTAT_SPIROV;
@@ -21,6 +22,7 @@ void init_display(void)
     TRISFCLR = VDD_BIT | VBAT_BIT | DATA_CMD_BIT;
     TRISGCLR = RESET_BIT;
 
+    // Vi vill skicka kommandon så vi tar bort data kontroll biten, sedan sätter vi på VDD och väntar lite.
     PORTFCLR = VDD_BIT | DATA_CMD_BIT;
     delay_ms(1);
 
@@ -30,6 +32,7 @@ void init_display(void)
     delay_ms(1);
     PORTGSET = RESET_BIT;
 
+
     spi_transmission(0x8D);
     spi_transmission(0x14);
     spi_transmission(0xD9);
@@ -38,6 +41,7 @@ void init_display(void)
     PORTFCLR = VBAT_BIT;
     delay_ms(100);
 
+    // Inverterar skärmen och sätter origo i det övre vänstra hörnet.
     spi_transmission(0xA1);
     spi_transmission(0xC8);
     spi_transmission(0xDA);
@@ -52,12 +56,16 @@ void update_display(unsigned char *buffer)
     for (page = 0; page < DISPLAY_PAGES; page++)
     {
         PORTFCLR = DATA_CMD_BIT;
+
+        // Sätt vilken page vi vill skriva till.
         spi_transmission(0x22);
         spi_transmission(page);
+
+        // Börja med den vänstra kolumnen.
         spi_transmission(0x0);
         spi_transmission(0x10);
         PORTFSET = DATA_CMD_BIT;
-
+    
         unsigned char column;
         for (column = 0; column < DISPLAY_WIDTH; column++)
         {

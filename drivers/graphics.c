@@ -2,8 +2,10 @@
 #include "../tools/utility.h"
 #include "graphics.h"
 
+// Den här vektorn skickas till skärmen när metoden refresh_display() anropas.
 static unsigned char buffer[BUFFER_SIZE];
 
+// Alla tecken som ska användas är hårdkodade i den här vektorn. Alla tecken är som störst 5x5 pixlar.
 static const unsigned int font[] = {
     0x00000000, // ' '
     0x00100421, // '!'
@@ -66,6 +68,7 @@ static const unsigned int font[] = {
     0x00F0990F, // 'Z'
 };
 
+// Alla tecken har en unik bredd som lagras i den här vektorn.
 static const unsigned char fontWidth[] = {
     4, // ' '
     1, // '!'
@@ -130,6 +133,7 @@ static const unsigned char fontWidth[] = {
 
 void set_pixel(int x, int y)
 {
+    // Kontrollerar ifall den angivna koordinaten ligger på skärmen.
     if (x < 0 || x > DISPLAY_WIDTH - 1 || y < 0 || y > DISPLAY_HEIGHT - 1)
         return;
 
@@ -141,6 +145,7 @@ void set_pixel(int x, int y)
 
 void clear_pixel(int x, int y)
 {
+    // Kontrollerar ifall den angivna koordinaten ligger på skärmen.
     if (x < 0 || x > DISPLAY_WIDTH - 1 || y < 0 || y > DISPLAY_HEIGHT - 1)
         return;
 
@@ -155,6 +160,7 @@ void draw_vertical_line(int x, int y, int y2)
     int minY = y < y2 ? y : y2;
     int maxY = y > y2 ? y : y2;
 
+    // Fyller i pixlarna mellan y och y2.
     while (minY <= maxY)
     {
         set_pixel(x, minY++);
@@ -172,6 +178,7 @@ void draw_dotted_vertical_line(int x, int y, int y2, unsigned int filledSize, un
     {
         if (filledCount == filledSize)
         {
+            // Vi skapar ett hål i linjen som har längden spaceSize.
             minY += spaceSize;
             filledCount = 0;
         }
@@ -188,6 +195,7 @@ void draw_horizontal_line(int x, int y, int x2)
     int minX = x < x2 ? x : x2;
     int maxX = x > x2 ? x : x2;
 
+    // Fyller i pixlarna mellan x och x2.
     while (minX <= maxX)
     {
         set_pixel(minX++, y);
@@ -205,6 +213,7 @@ void draw_dotted_horizontal_line(int x, int y, int x2, unsigned int filledSize, 
     {
         if (filledCount == filledSize)
         {
+            // Vi skapar ett hål i linjen som har längden spaceSize.
             minX += spaceSize;
             filledCount = 0;
         }
@@ -221,11 +230,13 @@ void draw_rectangle(int x, int y, unsigned int width, unsigned int height)
     int xCopy, yCopy;
     for (xCopy = x; xCopy < x + width; xCopy++)
     {
+        // Ritar två horisontella linjer.
         set_pixel(xCopy, y);
         set_pixel(xCopy, y + height - 1);
     }
     for (yCopy = y; yCopy < y + height; yCopy++)
     {
+        // Ritar två vertikala linjer.
         set_pixel(x, yCopy);
         set_pixel(x + width - 1, yCopy);
     }
@@ -248,12 +259,15 @@ void draw_string(const char *str, unsigned int spacing, int x, int y)
     int xCopy, yCopy;
     while (*str != '\0')
     {
+        // Vektorn font innehåller kodningen för varje tecken i samma ordning som ASCII 
+        // vi unyttjar det för att veta vilket tecken användaren har valt.
         unsigned char charIndex = *str - 0x20;
         unsigned char bit = 0;
         for (yCopy = y; yCopy < y + FONT_HEIGHT; yCopy++)
         {
             for (xCopy = x; xCopy < x + FONT_WIDTH; xCopy++)
             {
+                // Vi använder oss av kodningen i font vektorn för att se ifall en pixel ska sättas eller inte.
                 if (font[charIndex] & (1 << bit))
                 {
                     set_pixel(xCopy, yCopy);
@@ -261,6 +275,8 @@ void draw_string(const char *str, unsigned int spacing, int x, int y)
                 bit++;
             }
         }
+        // Alla tecken har olika bredd, vi tar hänsyn till det genom att undersöka bredden
+        // för just det tecknet vi skrivit ut och lägger på lite spacing.
         x += fontWidth[charIndex] + spacing;
         str++;
     }
@@ -275,7 +291,9 @@ void draw_char(char c, int x, int y)
 void draw_int(unsigned int integer, unsigned int spacing, int x, int y)
 {
     char buffer[11];
-    int_to_string(integer, buffer);
+
+    // Konverterar heltalet till en sträng och återanvänder metoden draw_string().
+    int_to_string(integer, buffer); 
     draw_string(buffer, spacing, x, y);
 }
 
@@ -292,6 +310,7 @@ unsigned int get_string_width(const char *str, unsigned int spacing)
         length += get_char_width(*str) + spacing;
         str++;
     }
+    // Den sista karaktären har ingen spacing, vi tar hänsyn till det här.
     length -= spacing;
     return length;
 }

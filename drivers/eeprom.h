@@ -4,18 +4,39 @@
 #define CONTROL_BYTE_WRITE 0xA0
 #define CONTROL_BYTE_READ 0xA1
 
+/**
+ *  Initierar I2C1 för att kunna kommunicera med EEPROM.
+*/
 void init_eeprom(void);
 
-void write_byte(unsigned short address, unsigned char byte);
+/**
+ *  Skriven 8-bitar till en angiven adress i EEPROM minnet.
+*/
+void write_byte_to_eeprom(unsigned short address, unsigned char byte);
 
-void write_int(unsigned short address, unsigned int integer);
+/**
+ *  Skriven 32-bitar till en angiven adress i EEPROM minnet.
+*/
+void write_int_to_eeprom(unsigned short address, unsigned int integer);
 
-void write_string(unsigned short address, const char *str, unsigned int maxLength);
+/**
+ *  Skriven en sträng till en angiven adress i EEPROM minnet.
+*/
+void write_string_to_eeprom(unsigned short address, const char *str);
 
-unsigned char read_byte(unsigned short address);
+/**
+ *  Läser 8-bitar från en angiven adress i EEPROM minnet.
+*/
+unsigned char read_byte_from_eeprom(unsigned short address);
 
-unsigned int read_int(unsigned short address);
+/**
+ *  Läser 32-bitar från en angiven adress i EEPROM minnet.
+*/
+unsigned int read_int_from_eeprom(unsigned short address);
 
-void read_string(unsigned short address, char *buffer, unsigned int maxLength);
+/**
+ *  Läser en sträng från en angiven adress i EEPROM minnet.
+*/
+void read_string_from_eeprom(unsigned short address, char *buffer);
 
 #endif
