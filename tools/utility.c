@@ -46,3 +46,16 @@ void int_to_string(unsigned int integer, char *buffer)
 
     buffer[digits] = '\0';
 }
+
+static unsigned int next = 123456789;
+
+unsigned int random(unsigned int min, unsigned int max)
+{
+    next = next * 1103515245 + 12345;
+    return ((next / 65536) % max) + min;
+}
+
+void seed_random(unsigned int seed)
+{
+    next = seed;
+}

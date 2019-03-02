@@ -80,26 +80,24 @@ void write_byte(unsigned short address, unsigned char byte)
 
 void write_int(unsigned short address, unsigned int integer)
 {
-    send_address(address);
-    send(integer >> 24);
-    send(integer >> 16);
-    send(integer >> 8);
-    send(integer);
-    stop();
+    write_byte(address, integer >> 24);
+    write_byte(address + 1, integer >> 16);
+    write_byte(address + 2, integer >> 8);
+    write_byte(address + 3, integer);
 }
 
-void write_string(unsigned short address, const char *str)
+void write_string(unsigned short address, const char *str, unsigned int maxLength)
 {
-    send_address(address);
-
-    while (*str != '\0')
+    int i;
+    for (i = 0; i < maxLength; i++)
     {
-        send(*str);
+        write_byte(address + i, *str);
+        if (*str == '\0')
+        {
+            return;
+        }
         str++;
     }
-
-    send('\0');
-    stop();
 }
 
 unsigned char read_byte(unsigned short address)
@@ -119,50 +117,23 @@ unsigned char read_byte(unsigned short address)
 
 unsigned int read_int(unsigned short address)
 {
-    send_address(address);
-
-    do
-    {
-        start();
-    } while (!send(CONTROL_BYTE_READ));
-
-    int integer = 0;
-
-    integer |= receive() << 24;
-    acknowledge();
-    integer |= receive() << 16;
-    acknowledge();
-    integer |= receive() << 8;
-    acknowledge();
-    integer |= receive();
-
-    not_acknowledge();
-    stop();
+    unsigned int integer = 0;
+    integer |= read_byte(address) << 24;
+    integer |= read_byte(address + 1) << 16;
+    integer |= read_byte(address + 2) << 8;
+    integer |= read_byte(address + 3);
     return integer;
 }
 
-unsigned int read_string(unsigned short address, char *buffer)
+void read_string(unsigned short address, char *buffer, unsigned int maxLength)
 {
-    send_address(address);
-
-    do
-    {
-        start();
-    } while (!send(CONTROL_BYTE_READ));
-
     int i;
-    for (i = 0; i < 64; i++)
+    for (i = 0; i < maxLength; i++)
     {
-        buffer[i] = receive();
-        if (buffer[i] != '\0')
+        buffer[i] = read_byte(address + i);
+        if (buffer[i] == '\0')
         {
-            acknowledge();
-        }
-        else
-        {
-            not_acknowledge();
-            stop();
-            return strlen(buffer);
+            return;
         }
     }
 }

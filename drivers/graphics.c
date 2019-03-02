@@ -18,7 +18,7 @@ static const unsigned int font[] = {
     0x0,
     0x0,
     0x0,
-    0x0,
+    0x00007C00, // '-'
     0x00100000, // '.'
     0x0,
     0x0064A526, // '0'
@@ -80,7 +80,7 @@ static const unsigned char fontWidth[] = {
     0,
     0,
     0,
-    0,
+    5,
     1, // '.'
     0,
     4, // '0'
@@ -250,9 +250,9 @@ void draw_string(const char *str, unsigned int spacing, int x, int y)
     {
         unsigned char charIndex = *str - 0x20;
         unsigned char bit = 0;
-        for (yCopy = y; yCopy < y + 5; yCopy++)
+        for (yCopy = y; yCopy < y + FONT_HEIGHT; yCopy++)
         {
-            for (xCopy = x; xCopy < x + 5; xCopy++)
+            for (xCopy = x; xCopy < x + FONT_WIDTH; xCopy++)
             {
                 if (font[charIndex] & (1 << bit))
                 {

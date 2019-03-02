@@ -4,6 +4,8 @@
 #include "display.h"
 
 #define BUFFER_SIZE (DISPLAY_WIDTH * DISPLAY_PAGES)
+#define FONT_WIDTH 5
+#define FONT_HEIGHT 5
 
 void set_pixel(int x, int y);
 

@@ -10,12 +10,12 @@ void write_byte(unsigned short address, unsigned char byte);
 
 void write_int(unsigned short address, unsigned int integer);
 
-void write_string(unsigned short address, const char *str);
+void write_string(unsigned short address, const char *str, unsigned int maxLength);
 
 unsigned char read_byte(unsigned short address);
 
 unsigned int read_int(unsigned short address);
 
-unsigned int read_string(unsigned short address, char *buffer);
+void read_string(unsigned short address, char *buffer, unsigned int maxLength);
 
 #endif
