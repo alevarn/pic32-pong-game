@@ -169,7 +169,7 @@ void fix_seed(void)
 {
     // Lagrat initialvärde.
     unsigned int seed = read_int_from_eeprom(0);
-    
+
     // Vi beräknar ett nytt initialvärde till nästa gång datorn startas om,
     // vi vill inte använda samma eftersom då kommer mönster att uppreppas.
     unsigned int nextSeed = 0;
@@ -279,12 +279,16 @@ void single_player(void)
     Player player1;
     Player bot = {.name = "BOT"};
     Ball ball;
+
+    // Läser in svårighetsgrad.
     Difficulty difficulty = difficulty_menu();
+
+    // Läser in ett valfritt namn på spelaren.
     input_name(player1.name, "ENTER YOUR NAME");
     reset_positions(&player1, &bot, &ball);
 
+    // Sätter startvärden.
     int gameTime = GAME_TIME;
-
     player1.score = 0;
     bot.score = 0;
     reset = 1;
@@ -299,6 +303,7 @@ void single_player(void)
         ai_control(&bot, &ball, difficulty);
         update_game(&player1, &bot, &ball, &gameTime);
 
+        // Undersöker knapparna som ska kontrollera spelare 1.
         if (btn4_down())
         {
             move_player_up(&player1);
@@ -308,6 +313,7 @@ void single_player(void)
             move_player_down(&player1);
         }
 
+        // Kontrollerar ifall tiden är slut.
         if (gameTime < 1000)
         {
             clear_display();
@@ -332,7 +338,8 @@ void single_player(void)
 
             delay_ms(1000);
 
-            while (!(btn1_clicked() || btn2_clicked() || btn3_clicked() || btn4_clicked()));
+            while (!(btn1_clicked() || btn2_clicked() || btn3_clicked() || btn4_clicked()))
+                ;
 
             update_highscore(&player1, 1);
 
@@ -346,13 +353,15 @@ void multiplayer(void)
     Player player1;
     Player player2;
     Ball ball;
+
+    // Läser in ett namn för spelare 1 och ett till namn för spelare 2.
     input_name(player1.name, "ENTER NAME FOR PLAYER 1");
     input_name(player2.name, "ENTER NAME FOR PLAYER 2");
 
     reset_positions(&player1, &player2, &ball);
 
+    // Sätter startvärden.
     int gameTime = GAME_TIME;
-
     player1.score = 0;
     player2.score = 0;
     reset = 1;
@@ -366,6 +375,7 @@ void multiplayer(void)
 
         update_game(&player1, &player2, &ball, &gameTime);
 
+        // Undersöker knapparna som ska kontrollera spelare 1.
         if (btn4_down())
         {
             move_player_up(&player1);
@@ -375,6 +385,7 @@ void multiplayer(void)
             move_player_down(&player1);
         }
 
+        // Undersöker knapparna som ska kontrollera spelare 2.
         if (btn2_down())
         {
             move_player_up(&player2);
@@ -384,6 +395,7 @@ void multiplayer(void)
             move_player_down(&player2);
         }
 
+        // Kontrollerar ifall tiden är slut.
         if (gameTime < 1000)
         {
             clear_display();
@@ -408,7 +420,8 @@ void multiplayer(void)
 
             delay_ms(1000);
 
-            while (!(btn1_clicked() || btn2_clicked() || btn3_clicked() || btn4_clicked()));
+            while (!(btn1_clicked() || btn2_clicked() || btn3_clicked() || btn4_clicked()))
+                ;
 
             Player players[2] = {player1, player2};
 
@@ -421,7 +434,9 @@ void multiplayer(void)
 
 void highscore(void)
 {
+    // Ett värde som förskjuter alla object i y-led, detta skapar en "scroll" effekt.
     int y = 0;
+
     while (1)
     {
         delay_ms(REFRESH_DELAY);
@@ -433,6 +448,7 @@ void highscore(void)
         int i;
         for (i = 0; i < HIGHSCORE_TABLE_SIZE; i++)
         {
+            // Skriver ut index siffra, punkt och namn på spelaren och motsvarande poäng.
             draw_int(i + 1, 0, 1, 12 + (12 * i) + y);
             draw_char('.', 6, 12 + (12 * i) + y);
             draw_string(highscores[i].name, 1, 12, 12 + (12 * i) + y);
@@ -445,6 +461,7 @@ void highscore(void)
         {
             if (y != 0)
             {
+                // Scrollar uppåt.
                 y += 8;
             }
         }
@@ -453,17 +470,20 @@ void highscore(void)
         {
             if (y != -88)
             {
+                // Scrollar neråt.
                 y -= 8;
             }
         }
 
         if (btn2_clicked())
         {
+            // Går tillbaka till "MAIN MENU".
             return;
         }
     }
 }
 
+// Den här metoden liknar metoden main_menu().
 Difficulty difficulty_menu(void)
 {
     Difficulty marked = EASY;
@@ -525,6 +545,7 @@ void input_name(char *buffer, char *pageTitle)
     char marked = 0x41;
     unsigned char digits = 0;
 
+    // Sätter alla tecken i strängen till '-'.
     int i;
     for (i = 0; i < PLAYER_NAME_LENGTH; i++)
     {
@@ -535,6 +556,7 @@ void input_name(char *buffer, char *pageTitle)
 
     while (1)
     {
+        // Ritar ut all grafik.
         delay_ms(REFRESH_DELAY);
         clear_display();
         draw_string(pageTitle, 1, DISPLAY_WIDTH / 2 - get_string_width(pageTitle, 1) / 2, 1);
@@ -544,6 +566,7 @@ void input_name(char *buffer, char *pageTitle)
         draw_string(buffer, 2, 30, 20);
         refresh_display();
 
+        // Kontrollerar om markerad bokstav ska bytas.
         if (btn4_clicked())
         {
             if (marked == 0x41)
@@ -556,6 +579,7 @@ void input_name(char *buffer, char *pageTitle)
             }
         }
 
+        // Kontrollerar om markerad bokstav ska bytas.
         if (btn3_clicked())
         {
             if (marked == 0x5A)
@@ -570,11 +594,13 @@ void input_name(char *buffer, char *pageTitle)
 
         if (btn2_clicked())
         {
+            // Den markerade bokstaven sätts in i strängen.
             buffer[digits++] = marked;
         }
 
         if (btn1_clicked() || digits == 10)
         {
+            // Vi är klara med inmatning av namn och hoppar ur den här metoden.
             buffer[digits] = '\0';
             return;
         }
@@ -583,6 +609,7 @@ void input_name(char *buffer, char *pageTitle)
 
 void move_player_up(Player *player)
 {
+    // Flyttar spelaren uppåt så länge den inte nuddar taket.
     if (player->y != 0)
     {
         player->y--;
@@ -590,6 +617,7 @@ void move_player_up(Player *player)
 }
 void move_player_down(Player *player)
 {
+    // Flyttar spelaren neråt så länge den inte nuddar golvet.
     if (player->y + PLAYER_HEIGHT != DISPLAY_HEIGHT)
     {
         player->y++;
@@ -598,15 +626,21 @@ void move_player_down(Player *player)
 
 void ai_control(Player *player, Ball *ball, Difficulty difficulty)
 {
+    // Desto högre värde på actionPoints desto bättre drag får AI:n göra.
     static int actionPoints = 0;
+
+    // Antalet iterationer som AI:n kommer använda sig av samma actionPoints värde.
     static int rounds = 0;
 
     if (rounds == 0)
     {
+        // Uppdaterar action points till ett nytt slumpvärde och sätter in nya rounds.
+        // Vi tar hänsyn till svårighetsgrad och ser till att generera större slumptal beroende på difficulty.
         actionPoints = random(1000 + (1500 << difficulty));
         rounds = 50;
     }
 
+    // Följer bollen i y-led (bästa möjliga drag).
     if (actionPoints > 1000 && ball->velocityX == 1)
     {
         if (ball->velocityY == 1)
@@ -619,11 +653,12 @@ void ai_control(Player *player, Ball *ball, Difficulty difficulty)
         }
         rounds--;
     }
+    // Väntar och står helt stilla (normal bra drag).
     else if (actionPoints >= 500 && actionPoints <= 1000 && ball->velocityX == 1)
     {
-        // Vänta.
         rounds--;
     }
+    // Går åt motsatt håll gentemot bollen (dåligt drag).
     else if (ball->velocityX == 1)
     {
         if (ball->velocityY == 1)
@@ -641,6 +676,7 @@ void ai_control(Player *player, Ball *ball, Difficulty difficulty)
 
 void reset_positions(Player *player1, Player *player2, Ball *ball)
 {
+    // Sätter startvärden för spelarna och bollen.
     player1->x = 2;
     player1->y = DISPLAY_HEIGHT / 2 - PLAYER_HEIGHT / 2;
     player2->x = DISPLAY_WIDTH - PLAYER_WIDTH - 2;
@@ -651,32 +687,41 @@ void reset_positions(Player *player1, Player *player2, Ball *ball)
 
 void draw_game(const Player *player1, const Player *player2, const Ball *ball, const int *gameTime)
 {
+    // Ritar ut spelarna och bollen.
     draw_filled_rectangle(player1->x, player1->y, PLAYER_WIDTH, PLAYER_HEIGHT);
     draw_filled_rectangle(player2->x, player2->y, PLAYER_WIDTH, PLAYER_HEIGHT);
     draw_filled_rectangle(ball->x, ball->y, BALL_SIZE, BALL_SIZE);
     draw_dotted_vertical_line(DISPLAY_WIDTH / 2, 0, 26, 4, 3);
+
+    // Ritar ut poängen för spelarna.
     draw_int(player1->score, 1, DISPLAY_WIDTH / 2 - get_int_width(player1->score, 1) - 16, 0);
     draw_int(player2->score, 1, DISPLAY_WIDTH / 2 + get_int_width(player2->score, 1) / 2 + 15, 0);
+
     unsigned int minutes = (*gameTime) / 1000 / 60;
     unsigned int seconds = (*gameTime) / 1000 % 60;
-    draw_int(minutes / 10, 0, 51, 27);
-    draw_int(minutes % 10, 0, 57, 27);
+    draw_int(minutes / 10, 0, 51, 27); // Första minut-siffran.
+    draw_int(minutes % 10, 0, 57, 27); // Andra minut-siffran.
     draw_char(':', 64, 27);
-    draw_int(seconds / 10, 0, 68, 27);
-    draw_int(seconds % 10, 0, 74, 27);
+    draw_int(seconds / 10, 0, 68, 27); // Första sekund-siffran.
+    draw_int(seconds % 10, 0, 74, 27); // Andra sekund-siffran.
 }
 
 void update_game(Player *player1, Player *player2, Ball *ball, int *gameTime)
 {
+    // Om reset = 1 så ska spelet stå stilla och bollen ska inte röra på sig.
     if (reset)
     {
+        // Vi återställer positioner till startvärden.
         reset_positions(player1, player2, ball);
         clear_display();
         draw_game(player1, player2, ball, gameTime);
         refresh_display();
 
+        // Beräknar en slumpmässig riktning åt bollen. Det skulle
+        // vara tråkigt om bollen började röra sig åt samma håll varje gång spelet började.
         int ballRandomStart = random(4);
 
+        // Det finns totalt 4 olika kombinationer.
         switch (ballRandomStart)
         {
         case 0:
@@ -697,35 +742,42 @@ void update_game(Player *player1, Player *player2, Ball *ball, int *gameTime)
             break;
         }
 
-        while (!(btn1_clicked() || btn2_clicked() || btn3_clicked() || btn4_clicked()))
-            ;
+        // Väntar på ett klick från vilken knapp som helst, när ett klick har registrerats då börjar spelet igen.
+        while (!(btn1_clicked() || btn2_clicked() || btn3_clicked() || btn4_clicked()));
 
         reset = 0;
     }
     else
     {
+        // Minskar på tiden som är kvar av spelet.
         *gameTime -= REFRESH_DELAY;
 
+        // Kontrollerar kollision mellan bollen, taket och golvet.
         if (ball->y == 0 || ball->y + BALL_SIZE == DISPLAY_HEIGHT)
         {
+            // Ser till att bollen byter riktning i y-led.
             ball->velocityY *= -1;
         }
 
+        // Kontrollerar kollision med spelare 1.
         if (ball->x == player1->x + PLAYER_WIDTH && ball->y + BALL_SIZE >= player1->y && ball->y <= player1->y + PLAYER_HEIGHT)
         {
             ball->velocityX *= -1;
         }
 
+        // Kontrollerar kollision med spelare 2.
         if (ball->x + BALL_SIZE == player2->x && ball->y + BALL_SIZE >= player2->y && ball->y <= player2->y + PLAYER_HEIGHT)
         {
             ball->velocityX *= -1;
         }
 
+        // Kontrollerar om spelare 1 ska ha ett poäng.
         if (ball->x + BALL_SIZE == DISPLAY_WIDTH)
         {
             player1->score++;
             reset = 1;
         }
+        // Kontrollerar om spelare 2 ska ha ett poäng.
         else if (ball->x == 0)
         {
             player2->score++;
@@ -733,6 +785,7 @@ void update_game(Player *player1, Player *player2, Ball *ball, int *gameTime)
         }
         else
         {
+            // Uppdaterar bollens position.
             ball->x += ball->velocityX;
             ball->y += ball->velocityY;
         }
@@ -741,28 +794,36 @@ void update_game(Player *player1, Player *player2, Ball *ball, int *gameTime)
 
 void update_highscore(Player *players, unsigned char numberOfPlayers)
 {
+    // Vi går igenom alla spelare.
     int playerIndex;
     for (playerIndex = 0; playerIndex < numberOfPlayers; playerIndex++)
-    {
+    {   
+        // Skapar en kopia av highscores listan.
         Player newHighscores[9];
 
         int recordIndex;
         for (recordIndex = 0; recordIndex < HIGHSCORE_TABLE_SIZE; recordIndex++)
         {
+            // Kontrollerar om den nya spelarens poäng ska placeras på en viss position i listan.
             if (players[playerIndex].score >= highscores[recordIndex].score)
             {
-                int i;
+                // Vi stoppar in det nya rekordet i listan. 
                 newHighscores[recordIndex] = players[playerIndex];
+                
+                int i;
                 for (i = recordIndex; i < HIGHSCORE_TABLE_SIZE - 1; i++)
                 {
+                    // Vi kopierar över alla kvarstående rekord från den gamla listan in till den nya.
                     newHighscores[i + 1] = highscores[i];
                 }
                 break;
             }
 
+            // Vi stoppar in alla gamla rekord i den nya listan.
             newHighscores[recordIndex] = highscores[recordIndex];
         }
 
+        // Kopierar över den nya listan till den gamla.
         int j;
         for (j = 0; j < HIGHSCORE_TABLE_SIZE; j++)
         {
@@ -775,6 +836,7 @@ void update_highscore(Player *players, unsigned char numberOfPlayers)
     int i;
     for (i = 0; i < HIGHSCORE_TABLE_SIZE; i++)
     {
+        // Vi skriven information från listan till EEPROM minnet.
         write_string_to_eeprom(address, highscores[i].name);
         address += strlen(highscores[i].name) + 1;
         write_int_to_eeprom(address, highscores[i].score);
