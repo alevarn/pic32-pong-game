@@ -338,8 +338,7 @@ void single_player(void)
 
             delay_ms(1000);
 
-            while (!(btn1_clicked() || btn2_clicked() || btn3_clicked() || btn4_clicked()))
-                ;
+            while (!(btn1_clicked() || btn2_clicked() || btn3_clicked() || btn4_clicked()));
 
             update_highscore(&player1, 1);
 
@@ -420,8 +419,7 @@ void multiplayer(void)
 
             delay_ms(1000);
 
-            while (!(btn1_clicked() || btn2_clicked() || btn3_clicked() || btn4_clicked()))
-                ;
+            while (!(btn1_clicked() || btn2_clicked() || btn3_clicked() || btn4_clicked()));
 
             Player players[2] = {player1, player2};
 
@@ -711,7 +709,7 @@ void update_game(Player *player1, Player *player2, Ball *ball, int *gameTime)
     // Om reset = 1 så ska spelet stå stilla och bollen ska inte röra på sig.
     if (reset)
     {
-        // Vi återställer positioner till startvärden.
+        // Vi återställer positioner.
         reset_positions(player1, player2, ball);
         clear_display();
         draw_game(player1, player2, ball, gameTime);
