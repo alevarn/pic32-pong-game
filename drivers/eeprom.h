@@ -6,36 +6,43 @@
 
 /**
  *  Initierar I2C1 för att kunna kommunicera med EEPROM.
+ *  Skriven av Marcus Alevärn.
 */
 void init_eeprom(void);
 
 /**
  *  Skriven 8-bitar till en angiven adress i EEPROM minnet.
+ *  Skriven av Marcus Alevärn.
 */
 void write_byte_to_eeprom(unsigned short address, unsigned char byte);
 
 /**
  *  Skriven 32-bitar till en angiven adress i EEPROM minnet.
+ *  Skriven av Marcus Alevärn.
 */
 void write_int_to_eeprom(unsigned short address, unsigned int integer);
 
 /**
  *  Skriven en sträng till en angiven adress i EEPROM minnet.
+ *  Skriven av Marcus Alevärn.
 */
 void write_string_to_eeprom(unsigned short address, const char *str);
 
 /**
  *  Läser 8-bitar från en angiven adress i EEPROM minnet.
+ *  Skriven av Marcus Alevärn.
 */
 unsigned char read_byte_from_eeprom(unsigned short address);
 
 /**
  *  Läser 32-bitar från en angiven adress i EEPROM minnet.
+ *  Skriven av Marcus Alevärn.
 */
 unsigned int read_int_from_eeprom(unsigned short address);
 
 /**
  *  Läser en sträng från en angiven adress i EEPROM minnet.
+ *  Skriven av Marcus Alevärn.
 */
 void read_string_from_eeprom(unsigned short address, char *buffer);
 

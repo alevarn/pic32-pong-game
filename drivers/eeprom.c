@@ -2,6 +2,7 @@
 #include "../tools/utility.h"
 #include "eeprom.h"
 
+// Skriven av Marcus Alevärn.
 void init_eeprom(void)
 {
     I2C1STAT = 0;
@@ -9,6 +10,7 @@ void init_eeprom(void)
     I2C1CON = PIC32_I2CCON_SIDL | PIC32_I2CCON_ON;
 }
 
+// Skriven av Marcus Alevärn.
 // Väntar på att I2C1 är redo.
 static void wait()
 {
@@ -16,6 +18,7 @@ static void wait()
     while (I2C1CON & busy || I2C1STAT & PIC32_I2CSTAT_TRSTAT);
 }
 
+// Skriven av Marcus Alevärn.
 // Skickar data med I2C1.
 static int send(unsigned char data)
 {
@@ -25,6 +28,7 @@ static int send(unsigned char data)
     return !(I2C1STAT & PIC32_I2CSTAT_ACKSTAT);
 }
 
+// Skriven av Marcus Alevärn.
 // Tar emot data med I2C1.
 static unsigned char receive()
 {
@@ -35,6 +39,7 @@ static unsigned char receive()
     return I2C1RCV;
 }
 
+// Skriven av Marcus Alevärn.
 static void acknowledge()
 {
     wait();
@@ -42,6 +47,7 @@ static void acknowledge()
     I2C1CONSET = PIC32_I2CCON_ACKEN;
 }
 
+// Skriven av Marcus Alevärn.
 static void not_acknowledge()
 {
     wait();
@@ -49,6 +55,7 @@ static void not_acknowledge()
     I2C1CONSET = PIC32_I2CCON_ACKEN;
 }
 
+// Skriven av Marcus Alevärn.
 static void start()
 {
     wait();
@@ -56,6 +63,7 @@ static void start()
     wait();
 }
 
+// Skriven av Marcus Alevärn.
 static void stop()
 {
     wait();
@@ -63,6 +71,7 @@ static void stop()
     wait();
 }
 
+// Skriven av Marcus Alevärn.
 // Skickar adressen som ska läsas/skrivas från/till EEPROM minnet.
 static void send_address(unsigned short address)
 {

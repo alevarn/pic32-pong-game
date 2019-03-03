@@ -1,6 +1,7 @@
 #include <pic32mx.h>
 #include "display.h"
 
+// Skriven av Marcus Alevärn.
 static unsigned char spi_transmission(unsigned char data)
 {
     while (!(SPI2STAT & PIC32_SPISTAT_SPITBE)); // Vänta tills överföringsbuffert är tom.

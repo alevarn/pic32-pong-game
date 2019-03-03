@@ -12,11 +12,13 @@
 
 /**
  *  Initierar SPI2 och OLED skärmen.
+ *  Skriven av Marcus Alevärn.
 */
 void init_display(void);
 
 /**
  *  Uppdaterar skärmen utifrån en array.
+ *  Skriven av Marcus Alevärn.
 */
 void update_display(unsigned char *buffer);
 

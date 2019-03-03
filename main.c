@@ -47,82 +47,98 @@ typedef struct
 /**
  *  Läser ett initialvärde från EEPROM och skriver dit ett nytt värde till EEPROM.
  *  Används för att generera olika slumptal som skiljer sig åt varje gång datorn startas om.
+ *  Skriven av Marcus Alevärn.
 */
 void fix_seed(void);
 
 /**
  *  Läser in highscores från EEPROM till programmet. Anropas varje gång programmet startas om.
+ *  Skriven av Jesse Feng.
 */
 void load_highscores(void);
 
 /**
  *  Återställer highscores bitarna i EEPROM till standard värden vilket är "EMPTY" och 0.
+ *  Skriven av Jesse Feng.
 */
 void reset_highscores(void);
 
 /**
  *  En meny som låter användaren välja "SINGLE PLAYER", "MULTIPLAYER" eller "HIGHSCORE" och returnerar det val som gjorts.
+ *  Skriven av Jesse Feng.
 */
 Selection main_menu(void);
 
 /**
  *  Den här metoden anropas när användaren väljer att spela "SINGLE PLAYER".
+ *  Skriven av Marcus Alevärn och Jesse Feng.
 */
 void single_player(void);
 
 /**
  *  Den här metoden anropas när användaren väljer att spela "MULTIPLAYER".
+ *  Skriven av Marcus Alevärn och Jesse Feng.
 */
 void multiplayer(void);
 
 /**
  *  Den här metoden anropas när användaren väljer "HIGHSCORE".
+ *  Skriven av Marcus Alevärn.
 */
 void highscore(void);
 
 /**
  *  Tar in nya resultat från ett antal spelare (en eller två) och sorterar om vektorn highscores efter poäng.
  *  Sedan skriver metoden in den nya highscore listan i EEPROM.
+ *  Skriven av Marcus Alevärn.
 */
 void update_highscore(Player *players, unsigned char numberOfPlayers);
 
 /**
  *  En meny som låter användaren välja "EASY", "MEDIUM", "HARD" eller "IMPOSSIBLE" och returnerar det val som gjorts.
+ *  Skriven av Jesse Feng.
 */
 Difficulty difficulty_menu(void);
 
 /**
  *  Låter användaren mata in ett namn. Här kan man också bestämma titeln för skärmen (pageTitle).
+ *  Skriven av Marcus Alevärn.
 */
 void input_name(char *buffer, char *pageTitle);
 
 /**
  *  Flyttar en spelare uppåt 1 pixel och kontrollerar kollision med taket.
+ *  Skriven av Jesse Feng.
 */
 void move_player_up(Player *player);
 
 /**
  *  Flyttar en spelare neråt 1 pixel och kontrollerar kollision med golvet.
+ *  Skriven av Jesse Feng.
 */
 void move_player_down(Player *player);
 
 /**
  *  Tar in en spelare som AI:n får kontrollera, beroende på svårighetsgrad så styr den spelaren olika bra.
+ *  Skriven av Marcus Alevärn.
 */
 void ai_control(Player *player, Ball *ball, Difficulty difficulty);
 
 /**
- * Återställer positionerna för spelarna och bollen. Den här metoden anropas efter att en spelare gjort poäng och i början av ett nytt spel.
+ *  Återställer positionerna för spelarna och bollen. Den här metoden anropas efter att en spelare gjort poäng och i början av ett nytt spel.
+ *  Skriven av Jesse Feng.
 */
 void reset_positions(Player *player1, Player *player2, Ball *ball);
 
 /**
  *  Ritar spelarna, bollen, klockan som tickar neråt och den prickade linjen längs mitten av spelplanen.
+ *  Skriven av Jesse Feng.
 */
 void draw_game(const Player *player1, const Player *player2, const Ball *ball, const int *gameTime);
 
 /**
  *  Uppdaterar bollens position och kontrollerar kollision med väggarna och spelarna och undersöker ifall någon spelare ska få poäng.
+ *  Skriven av Marcus Alevärn.
 */
 void update_game(Player *player1, Player *player2, Ball *ball, int *gameTime);
 
