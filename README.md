@@ -12,3 +12,9 @@ ChipKIT Uno32 development board together with ChipKIT Basic I/O.
 - **Multiplayer:** You can play against your buddy.
 - **Highscore:** You can enter your name before game start and if you take a record your name will be added to the highscore list.
 - **Non volatile memory:** The highscore list is saved in EEPROM on the ChipKIT Basic I/O, so even if the electricity is turned off the highscore list will still be stored.
+
+![Main menu](https://github.com/alevarn/pic32-pong-game/blob/master/example%20pictures/menu.png)
+![Selecting difficulty](https://github.com/alevarn/pic32-pong-game/blob/master/example%20pictures/difficulty.png)
+![Input name](https://github.com/alevarn/pic32-pong-game/blob/master/example%20pictures/input%20name.png)
+![In game](https://github.com/alevarn/pic32-pong-game/blob/master/example%20pictures/game.png)
+![Highscore](https://github.com/alevarn/pic32-pong-game/blob/master/example%20pictures/highscore.png)
