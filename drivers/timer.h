@@ -13,13 +13,11 @@
 
 /**
  *  Initierar TMR2 genom att sätta prescale bitarna och perioden.
- *  Skriven av Marcus Alevärn och Jesse Feng.
 */
 void init_timer(void);
 
 /**
  *  Genererar en fördröjning i ett önskat antal millisekunder.
- *  Skriven av Marcus Alevärn och Jesse Feng.
 */
 void delay_ms(unsigned int ms);
 
